@@ -74,7 +74,7 @@ class ResetPasswordController extends BaseController
         DB::beginTransaction();
         $user->password = Hash::make($input['password']);
         $userResetPasswordTokenTableName = UserResetPasswordToken::getTableName();
-        DB::delete("DELETE FROM {$userResetPasswordTokenTableName} WHERE user_id = {$user->id}");
+        DB::table($userResetPasswordTokenTableName)->where('user_id',"=",$user->id)->delete();
         $res &= $user->save();
         $res ? DB::commit() : DB::rollback();
 

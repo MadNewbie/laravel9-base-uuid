@@ -49,6 +49,13 @@ class RegisterController extends BaseController
             'token' => $token,
         ];
 
+        
+        $userVerifyToken = new UserVerifyToken();
+        $userVerifyToken->fill($inputVerifyToken);
+        $res &= $userVerifyToken->save();
+        $model->modifiedSyncRole([$role->id]);
+
+
         Mail::send('forecourt.mail.register', ['token' => $token], function($message) use($model){
 
             $message->to($model->email);
@@ -56,11 +63,7 @@ class RegisterController extends BaseController
             $message->subject('Email Verification Mail');
 
         });
-        
-        $userVerifyToken = new UserVerifyToken();
-        $userVerifyToken->fill($inputVerifyToken);
-        $res &= $userVerifyToken->save();
-        $model->assignRole($role->name);
+
         $res ? DB::commit() : DB::rollback();
 
         return $res ? redirect()->route('login')->with('success','Akun berhasil terdaftar. Silahkan cek kotak masuk email yang telah didaftarkan') : redirect()->route('register')->with('error','Akun gagal terdaftar');

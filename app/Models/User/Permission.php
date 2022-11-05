@@ -2,13 +2,24 @@
 namespace App\Models\User;
 
 use App\Base\Components\HelperModel;
+use App\Base\Components\Uuid;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission as BasePermission;
+use Str;
 
 class Permission extends BasePermission
 {
-    use HelperModel;
+    use HelperModel, Uuid;
     protected $table = 'permissions';
+
+    protected $keyType = 'string';
+    protected $primaryKey = 'id';
+
+    protected $fillable = [
+        'id',
+        'name',
+        'guard_name',
+    ];
 
     public static function updatePermissions()
     {
@@ -26,17 +37,18 @@ class Permission extends BasePermission
         $ids = [];
 
         foreach($routeList as $value) {
-            $permission = BasePermission::where(['name' => $value])->first();
+            $permission = BasePermission::where('name','=',$value)->first();
             if ($permission) {
                 $ids[]=$permission['id'];
             } else {
-                $permission = BasePermission::create(['name' => $value]);
-                $ids[]=$permission['id'];
+                $id = Str::uuid();
+                $permission = BasePermission::create(['name' => $value, 'id'=>$id]);
+                $ids[]=$id;
             }
         }
 
         $permissions = BasePermission::whereNotIn('id',$ids)->get();
-
+        
         foreach($permissions as $permission){
             $permission->delete();    
         }

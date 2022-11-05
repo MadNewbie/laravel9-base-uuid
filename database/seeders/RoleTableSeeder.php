@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User\Permission;
 use App\Models\User\Role;
 use Illuminate\Database\Seeder;
+use Str;
 
 class RoleTableSeeder extends Seeder
 {
@@ -12,21 +13,23 @@ class RoleTableSeeder extends Seeder
     {
         Permission::updatePermissions();
         
-        $permission = Permission::pluck('id','id')->all();
+        $permission = Permission::pluck('id')->all();
         
         $role = Role::create([
+            'id' => Str::uuid(),
             'name' => 'Developer',
         ]);
 
-        $role->syncPermissions($permission);
+        $role->modifiedSyncPermissions($permission);
         
-        $permission = Permission::where("name","like", "%home")->pluck('id','id');
+        $permission = Permission::where("name","like", "%home")->pluck('id');
 
         $role = Role::create([
+            'id' => Str::uuid(),
             'name' => 'Guest',
         ]);
 
-        $role->syncPermissions($permission);
+        $role->modifiedSyncPermissions($permission);
 
     }
 }

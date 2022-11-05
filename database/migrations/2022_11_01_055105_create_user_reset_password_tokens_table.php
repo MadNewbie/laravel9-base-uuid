@@ -15,7 +15,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('user_reset_password_tokens', function (Blueprint $table) {
-            $table->unsignedBigInteger('user_id');
+            $table->uuid('user_id');
             $table->string('token');
             $table->timestamps();
 
