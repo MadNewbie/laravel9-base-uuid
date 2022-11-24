@@ -11,12 +11,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\DataTables;
+Use Intervention\Image\ImageManagerStatic as Image;
 
 class UserController extends BaseController
 {
     public static $partName = 'backyard';
     public static $moduleName = 'user';
     public static $modelName = 'user';
+    public static $mediaPath = 'storage/profpic';
 
     public function __construct()
     {
@@ -79,10 +81,28 @@ class UserController extends BaseController
         $this->validate($request,$rules);
         $res = true;
         $input = $request->all();
-        $input['password'] = Hash::make($input['password']);
+        if(!isset($input['password']) || (strcmp($input['password'],"") == 0)){
+            unset($input['password']);
+        } else {
+            $input['password'] = Hash::make($input['password']);
+        }
         $model = $id ? User::find($id) : new User();
         $model->fill($input);
         DB::beginTransaction();
+        if(isset($input['photo'])){
+            if(isset($model->photo_filename)){
+                $existingPhoto = sprintf("%s/%s",public_path(self::$mediaPath), $model->photo_filename);
+                if(file_exists($existingPhoto)){
+                    unlink($existingPhoto);
+                }
+            }
+            preg_match('/data:image\/(?<mime>.*?)\;/',$input['photo'],$groups);
+            $mimetype = $groups['mime'];
+            $name = sprintf("img-%s", date('YmdHis'));
+            $filename = sprintf("%s/%s.%s",public_path(self::$mediaPath),$name,$mimetype);
+            $img = Image::make($input['photo'])->encode($mimetype, 100)->save($filename);
+            $model->photo_filename = $img->basename;
+        }
         $res &= $model->save();
         $model->assignRole($input['roles']);
         $res ? DB::commit() : DB::rollback();
@@ -95,15 +115,25 @@ class UserController extends BaseController
         return $this->_save($request);
     }
 
-    public function edit($id)
+    public function create()
     {
-        $user = User::find($id);
+        $model = new User();
         $roles = Role::pluck('name','name')->all();
-        $userRole = $user->roles->pluck('name', 'name')->all();
         if(!Auth::user()->isDeveloper()){
             unset($roles['Developer']);
         }
-        return self::makeView('edit', compact('user','roles','userRole'));
+        return self::makeView('create', compact('model','roles'));
+    }
+
+    public function edit($id)
+    {
+        $model = User::find($id);
+        $roles = Role::pluck('name','name')->all();
+        $userRole = $model->roles->pluck('name', 'name')->all();
+        if(!Auth::user()->isDeveloper()){
+            unset($roles['Developer']);
+        }
+        return self::makeView('edit', compact('model','roles','userRole'));
     }
 
     public function update(Request $request, $id)

@@ -81,7 +81,7 @@ class RoleController extends BaseController
         $model = $id ? Role::find($id) : new Role();
         $model->fill($input);
         $res &= $model->save();
-        $model->syncPermissions($input['permissions']);
+        $model->modifiedSyncPermissions($input['permissions']);
 
         return $res ? redirect()->route(self::getRoutePrefix('index'))->with('success', 'Data berhasil tersimpan') : redirect()->route(self::getRoutePrefix('index'))->with('error','Data gagal tersimpan');
     }

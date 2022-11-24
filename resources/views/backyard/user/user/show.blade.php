@@ -11,35 +11,23 @@
 
 @section('content')
 <div class="row">
-    <div class="col-4">
-        <div class="form-group">
-            <strong>Name: </strong>
-            {{$user->name}}
-        </div>
-    </div>
-    <div class="col-4">
-        <div class="form-group">
-            <strong>Userame: </strong>
-            {{$user->username}}
-        </div>
-    </div>
-    <div class="col-4">
-        <div class="form-group">
-            <strong>Email: </strong>
-            {{$user->email}}
-        </div>
-    </div>
-</div>
-<div class="row">
     <div class="col-12">
-        <div class="form-group">
-            <strong>Roles:</strong>
+        <dl class="dl-horizontal">
+            <dt>Name</dt>
+            <dd>{{$user->name}}</dd>
+            <dt>Username</dt>
+            <dd>{{$user->username}}</dd>
+            <dt>Email</dt>
+            <dd>{{$user->email}}</dd>
+            <dt>Roles</dt>
+            <dd>
             @if(!empty($user->getRoleNames()))
                 @foreach($user->getRoleNames() as $v)
                 <label class="badge badge-success">{{ $v }}</label>
                 @endforeach
             @endif
-        </div>
+            </dd>
+        </dl>
     </div>
 </div>
 <div class="row">

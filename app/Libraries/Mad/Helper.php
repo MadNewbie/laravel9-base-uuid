@@ -3,6 +3,7 @@ namespace App\Libraries\Mad;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class Helper
 {
@@ -89,5 +90,17 @@ class Helper
             $res[$tmpId] = $tmp;
         }
         return $res;
+    }
+
+    public static function uploadFileToStorage($data, $path, $name = null)
+    {
+        preg_match('/data:image\/(?<mime>.*?)\;/',$data,$groups);
+        $mimetype = $groups['mime'];
+        if(!isset($name)){
+           $name = sprintf("img-%s", date('YmdHis'));
+        }
+        $filename = sprintf("%s/%s.%s",public_path($path),$name,$mimetype);
+        $img = Image::make($data)->encode($mimetype, 100)->save($filename);
+        return $img;
     }
 }

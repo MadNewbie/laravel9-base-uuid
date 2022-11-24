@@ -39,8 +39,12 @@
                 <!-- Right Navbar -->
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item dropdown">
-                        <a class="nav-link" data-toggle="dropdown" href="">{{Auth::user()->name}}</a>
+                        <?php
+                            $profpic_filename = Auth::user()->photo_filename ? : "default.jpg";
+                        ?>
+                        <a class="nav-link" data-toggle="dropdown" href=""><img src="<?=asset("storage/profpic/$profpic_filename")?>" alt="User Avatar" class="img-circle mr-3" style="height:100%"> {{Auth::user()->name}}</a>
                         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <a href="<?php echo route('backyard.user.profile.show', Auth::user()->id)?>" class="dropdown-item" >Profile</a>
                             <a href="<?= route('logout') ?>" class="dropdown-item" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Logout</a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                 @csrf

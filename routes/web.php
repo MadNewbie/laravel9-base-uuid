@@ -51,5 +51,9 @@ Route::group(['prefix' => 'backyard', 'as' => 'backyard.'], function(){
         // Users
         Route::get('users/indexData', ['uses' => 'App\Http\Controllers\Backyard\User\UserController@indexData', 'as' => 'user.index.data']);
         Route::resource('users', 'App\Http\Controllers\Backyard\User\UserController',['names' => 'user']);
+        // Profile
+        Route::get('profile/{id}', ['uses' => 'App\Http\Controllers\Backyard\User\ProfileController@show', 'as' => 'profile.show']);
+        Route::get('profile/{id}/edit', ['uses' => 'App\Http\Controllers\Backyard\User\ProfileController@edit', 'as' => 'profile.edit']);
+        Route::match(['put','patch'],'profile/{id}', ['uses' => 'App\Http\Controllers\Backyard\User\ProfileController@update', 'as' => 'profile.update']);
     });
 });

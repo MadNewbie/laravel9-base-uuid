@@ -20,8 +20,8 @@ class IsVerifyEmail
     {
         if (Auth::user()->type_status != UserLookup::TYPE_STATUS_ACTIVE) {
             auth()->logout();
-            return redirect()->route('email.verification')
-            ->with('error', 'Perlu verifikasi akun, kode verifikasi telah kami kirim ke email yang telah terdaftar. Tolong cek email anda, Terima Kasih');
+            return redirect()->route('request.verification')
+            ->with('error', 'Perlu verifikasi akun. Silahkan mengajukan proses verifikasi email akun atau menghubungi administrator sistem, Terima Kasih');
         }
         return $next($request);
     }

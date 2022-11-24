@@ -37,17 +37,17 @@ class Permission extends BasePermission
         $ids = [];
 
         foreach($routeList as $value) {
-            $permission = BasePermission::where('name','=',$value)->first();
+            $permission = Permission::where('name','=',$value)->first();
             if ($permission) {
                 $ids[]=$permission['id'];
             } else {
                 $id = Str::uuid();
-                $permission = BasePermission::create(['name' => $value, 'id'=>$id]);
+                $permission = Permission::create(['name' => $value, 'id'=>$id]);
                 $ids[]=$id;
             }
         }
 
-        $permissions = BasePermission::whereNotIn('id',$ids)->get();
+        $permissions = Permission::whereNotIn('id',$ids)->get();
         
         foreach($permissions as $permission){
             $permission->delete();    
